@@ -1,9 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
+const fs = require('fs');
+const path = require('path');
 
-app.use(cors());               // <-- ADD THIS
-app.use(express.json());
-
-// your routes here
-app.use("/auth", require("./routes/authRoutes"));
+try {
+  const authPath = path.join(__dirname, 'routes', 'authRoutes.js');
+  if (fs.existsSync(authPath)) {
+    const authRoutes = require('./routes/authRoutes');
+    app.use('/auth', authRoutes);
+    console.log('Auth routes loaded.');
+  } else {
+    console.warn('Auth routes not found — continuing without /auth endpoints.');
+  }
+} catch (err) {
+  console.warn('Failed to load auth routes — continuing without /auth endpoints.', err.message);
+}
